@@ -564,7 +564,8 @@
         function createCard(restaurant, index) {
             const searchQuery = encodeURIComponent(`${restaurant.name} Seattle`);
             const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
-            const reserveUrl = `https://www.opentable.com/s?term=${encodeURIComponent(restaurant.name)}&location=Seattle`;
+            // Search for reservations on Google - shows OpenTable, Resy, Tock, etc.
+            const reserveUrl = `https://www.google.com/search?q=${encodeURIComponent(restaurant.name + ' Seattle reservations')}`;
             
             return `
                 <div class="restaurant-card" data-neighborhood="${restaurant.neighborhood}" data-cuisine="${restaurant.cuisine}">
