@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-03-11T14:24:51.082735",
+  "location": "Seattle, WA",
+  "results": [
+    {
+      "restaurant_slug": "din-tai-fung-pacific-place",
+      "platform": "OpenTable",
+      "error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://www.opentable.com/r/din-tai-fung-pacific-place\", waiting until \"domcontentloaded\"\n",
+      "checked_at": "2026-03-11T14:24:14.327034"
+    },
+    {
+      "restaurant_slug": "din-tai-fung-university-village",
+      "platform": "OpenTable",
+      "error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://www.opentable.com/r/din-tai-fung-university-village\", waiting until \"domcontentloaded\"\n",
+      "checked_at": "2026-03-11T14:24:48.073921"
+    }
+  ]
+}

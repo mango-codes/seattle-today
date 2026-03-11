@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-03-11T14:22:53.323708",
+  "location": "Seattle, WA",
+  "party_size": 2,
+  "results": [
+    {
+      "restaurant": "Din Tai Fung",
+      "platform": "OpenTable",
+      "error": "Page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://www.opentable.com/\nCall log:\n  - navigating to \"https://www.opentable.com/\", waiting until \"networkidle\"\n",
+      "checked_at": "2026-03-11T14:22:48.505757"
+    },
+    {
+      "restaurant": "Pablo y Pablo",
+      "platform": "OpenTable",
+      "error": "Page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://www.opentable.com/\nCall log:\n  - navigating to \"https://www.opentable.com/\", waiting until \"networkidle\"\n",
+      "checked_at": "2026-03-11T14:22:51.313762"
+    }
+  ]
+}

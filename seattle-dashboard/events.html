@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seattle Tonight - Events</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .date-section {
+            margin-bottom: 2rem;
+        }
+        
+        .date-header {
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #333;
+        }
+        
+        .event-card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+        
+        .event-card:hover {
+            transform: translateX(4px);
+            background: #1f1f3a;
+        }
+        
+        .event-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .event-venue {
+            color: #888;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .event-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: #333;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .tag.music { background: #e91e63; }
+        
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+        
+        .btn:hover {
+            background: #5a6fd6;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎭 Seattle Tonight</h1>
+        <p>Concerts and events happening now</p>
+    </header>
+    
+    <div class="container">
+        <div id="events-container">
+            <!-- Events will be inserted here -->
+        </div>
+    </div>
+    
+    <footer>
+        <p>Data from <a href="https://www.songkick.com/metro-areas/2846-us-seattle" target="_blank">Songkick</a></p>
+        <p>Last updated: <span id="lastUpdated">2026-03-11 15:06</span></p>
+    </footer>
+    
+    <script>
+        // Event data - will be updated by scraper
+        const events = [
+    {
+        "title": "Colony House",
+        "artist": "Colony House",
+        "venue": null,
+        "date": "2026-03-11",
+        "link": "https://www.songkick.com/concerts/42848244-colony-house-at-showbox-sodo",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855221"
+    },
+    {
+        "title": "Charlie Hunter Trio",
+        "artist": "Charlie Hunter Trio",
+        "venue": null,
+        "date": "2026-03-11",
+        "link": "https://www.songkick.com/concerts/43008040-charlie-hunter-trio-at-hidden-hall",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855267"
+    },
+    {
+        "title": "Cochemea",
+        "artist": "Cochemea",
+        "venue": null,
+        "date": "2026-03-11",
+        "link": "https://www.songkick.com/concerts/42886789-cochemea-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855310"
+    },
+    {
+        "title": "Dining Dead (Seattle), Reverse Death, and glass egg",
+        "artist": "Dining Dead (Seattle), Reverse Death, and glass egg",
+        "venue": null,
+        "date": "2026-03-11",
+        "link": "https://www.songkick.com/concerts/42829095-dining-dead-seattle-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855357"
+    },
+    {
+        "title": "Leif Totusek",
+        "artist": "Leif Totusek",
+        "venue": null,
+        "date": "2026-03-11",
+        "link": "https://www.songkick.com/concerts/42963261-leif-totusek-at-triple-door",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855402"
+    },
+    {
+        "title": "Modeselektor",
+        "artist": "Modeselektor",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42991417-modeselektor-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855447"
+    },
+    {
+        "title": "AlunaGeorge",
+        "artist": "AlunaGeorge",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/43075231-alunageorge-at-chop-suey",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855490"
+    },
+    {
+        "title": "Aluna",
+        "artist": "Aluna",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42837209-aluna-at-chop-suey",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855531"
+    },
+    {
+        "title": "Clinton Kane",
+        "artist": "Clinton Kane",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42932215-clinton-kane-at-barboza",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855574"
+    },
+    {
+        "title": "yung kai",
+        "artist": "yung kai",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42849479-yung-kai-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855615"
+    },
+    {
+        "title": "Snuffed on Sight",
+        "artist": "Snuffed on Sight",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/43075229-snuffed-on-sight-at-el-corazon",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855657"
+    },
+    {
+        "title": "Shadowgrass at The Fretliners",
+        "artist": "Shadowgrass",
+        "venue": "The Fretliners",
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42928384-shadowgrass-at-hidden-hall",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855699"
+    },
+    {
+        "title": "Matt Kirshen",
+        "artist": "Matt Kirshen",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42974215-matt-kirshen-at-emerald-city-comedy-club",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855741"
+    },
+    {
+        "title": "Mt Fog at Iroiro",
+        "artist": "Mt Fog",
+        "venue": "Iroiro",
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42987962-mt-fog-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855783"
+    },
+    {
+        "title": "Kat Robichaud",
+        "artist": "Kat Robichaud",
+        "venue": null,
+        "date": "2026-03-12",
+        "link": "https://www.songkick.com/concerts/42982810-kat-robichaud-at-triple-door",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855825"
+    },
+    {
+        "title": "Paul van Dyk",
+        "artist": "Paul van Dyk",
+        "venue": null,
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/42957181-paul-van-dyk-at-q-nightclub",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855868"
+    },
+    {
+        "title": "Chris Lorenzo at Tony H and DJ Mandy",
+        "artist": "Chris Lorenzo",
+        "venue": "Tony H and DJ Mandy",
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/43023788-chris-lorenzo-at-shop",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855911"
+    },
+    {
+        "title": "Bill Frisell",
+        "artist": "Bill Frisell",
+        "venue": null,
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/42874784-bill-frisell-at-moore-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855952"
+    },
+    {
+        "title": "1tbsp",
+        "artist": "1tbsp",
+        "venue": null,
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/42920025-1tbsp-at-showbox",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855994"
+    },
+    {
+        "title": "Kaivon",
+        "artist": "Kaivon",
+        "venue": null,
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/42880652-kaivon-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856039"
+    },
+    {
+        "title": "Cat Clyde",
+        "artist": "Cat Clyde",
+        "venue": null,
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/43079303-cat-clyde-at-sonic-boom-records-ballard",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856080"
+    },
+    {
+        "title": "Shlump at Stylust",
+        "artist": "Shlump",
+        "venue": "Stylust",
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/42966599-shlump-at-wild-buffalo",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856122"
+    },
+    {
+        "title": "lespecial",
+        "artist": "lespecial",
+        "venue": null,
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/43021720-lespecial-at-hidden-hall",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856163"
+    },
+    {
+        "title": "Kill Lincoln, Jer, Bad Operation, and Sorry SweetHeart",
+        "artist": "Kill Lincoln, Jer, Bad Operation, and Sorry SweetHeart",
+        "venue": null,
+        "date": "2026-03-13",
+        "link": "https://www.songkick.com/concerts/42975460-kill-lincoln-at-vera-project",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856208"
+    },
+    {
+        "title": "Peaches and Pixel Grip",
+        "artist": "Peaches and Pixel Grip",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/42841359-peaches-at-showbox",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856250"
+    },
+    {
+        "title": "Aimee Mann",
+        "artist": "Aimee Mann",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/42895642-aimee-mann-at-lincoln-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856291"
+    },
+    {
+        "title": "Soul Asylum",
+        "artist": "Soul Asylum",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/42993819-soul-asylum-at-tulalip-resort-casino",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856332"
+    },
+    {
+        "title": "redveil",
+        "artist": "redveil",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/42879722-redveil-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856372"
+    },
+    {
+        "title": "East Forest",
+        "artist": "East Forest",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/42942033-east-forest-at-neptune-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856413"
+    },
+    {
+        "title": "Spencer Brown",
+        "artist": "Spencer Brown",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/42990818-spencer-brown-at-q-nightclub",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856453"
+    },
+    {
+        "title": "Tony Vega",
+        "artist": "Tony Vega",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/42995004-tony-vega-at-historic-everett-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856502"
+    },
+    {
+        "title": "Millionaires",
+        "artist": "Millionaires",
+        "venue": null,
+        "date": "2026-03-14",
+        "link": "https://www.songkick.com/concerts/43076524-millionaires-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856543"
+    },
+    {
+        "title": "Aimee Mann and Jonathan Coulton",
+        "artist": "Aimee Mann and Jonathan Coulton",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/42895542-aimee-mann-at-neptune-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856584"
+    },
+    {
+        "title": "Dodie",
+        "artist": "Dodie",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/42747231-dodie-at-showbox-sodo",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856624"
+    },
+    {
+        "title": "Jonah Kagen",
+        "artist": "Jonah Kagen",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/42826594-jonah-kagen-at-crocodile",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856665"
+    },
+    {
+        "title": "Eric Roberson",
+        "artist": "Eric Roberson",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/43023803-eric-roberson-at-nectar-lounge",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856705"
+    },
+    {
+        "title": "Tow'rs",
+        "artist": "Tow'rs",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/43005546-towrs-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856746"
+    },
+    {
+        "title": "Colby Acuff",
+        "artist": "Colby Acuff",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/43016366-colby-acuff-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856789"
+    },
+    {
+        "title": "Dogma at Frayle",
+        "artist": "Dogma",
+        "venue": "Frayle",
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/43004547-dogma-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856830"
+    },
+    {
+        "title": "Dead Bars, EEP, and Dead Streets",
+        "artist": "Dead Bars, EEP, and Dead Streets",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/43021880-dead-bars-at-belltown-yacht-club",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856872"
+    },
+    {
+        "title": "Kasey Anderson",
+        "artist": "Kasey Anderson",
+        "venue": null,
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/42897471-kasey-anderson-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856912"
+    },
+    {
+        "title": "Cofgod at Blast Cells, Mutual Stoke, and MANSON'S GIRLS",
+        "artist": "Cofgod",
+        "venue": "Blast Cells, Mutual Stoke, and MANSON'S GIRLS",
+        "date": "2026-03-15",
+        "link": "https://www.songkick.com/concerts/43069192-cofgod-at-baba-yaga",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856953"
+    },
+    {
+        "title": "Conan Gray at Esha Tewari",
+        "artist": "Conan Gray",
+        "venue": "Esha Tewari",
+        "date": "2026-03-16",
+        "link": "https://www.songkick.com/concerts/42849301-conan-gray-at-climate-pledge-arena",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.856998"
+    },
+    {
+        "title": "Black Label Society, Zakk Sabbath, and Dark Chapel",
+        "artist": "Black Label Society, Zakk Sabbath, and Dark Chapel",
+        "venue": null,
+        "date": "2026-03-16",
+        "link": "https://www.songkick.com/concerts/42887609-black-label-society-at-paramount-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857042"
+    },
+    {
+        "title": "Timecop1983",
+        "artist": "Timecop1983",
+        "venue": null,
+        "date": "2026-03-16",
+        "link": "https://www.songkick.com/concerts/42894839-timecop1983-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857082"
+    },
+    {
+        "title": "Serengeti",
+        "artist": "Serengeti",
+        "venue": null,
+        "date": "2026-03-16",
+        "link": "https://www.songkick.com/concerts/43027964-serengeti-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857125"
+    },
+    {
+        "title": "HighSchool",
+        "artist": "HighSchool",
+        "venue": null,
+        "date": "2026-03-16",
+        "link": "https://www.songkick.com/concerts/42870897-highschool-at-barboza",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857167"
+    },
+    {
+        "title": "Thats Nokay",
+        "artist": "Thats Nokay",
+        "venue": null,
+        "date": "2026-03-16",
+        "link": "https://www.songkick.com/concerts/43050544-thats-nokay-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857208"
+    },
+    {
+        "title": "Hawthorne Heights",
+        "artist": "Hawthorne Heights",
+        "venue": null,
+        "date": "2026-03-17",
+        "link": "https://www.songkick.com/concerts/42862562-hawthorne-heights-at-el-corazon",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857248"
+    },
+    {
+        "title": "food house at The Crocodile - Old Location",
+        "artist": "food house",
+        "venue": "The Crocodile - Old Location",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43072455-food-house-at-crocodile-old-location",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.854751"
+    },
+    {
+        "title": "Wimps at Sunset Tavern",
+        "artist": "Wimps",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43077705-wimps-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.854819"
+    },
+    {
+        "title": "Cryptopsy at El Corazon",
+        "artist": "Cryptopsy",
+        "venue": "El Corazon",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43057455-cryptopsy-at-el-corazon",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.854867"
+    },
+    {
+        "title": "Chinese American Bear at Neumos",
+        "artist": "Chinese American Bear",
+        "venue": "Neumos",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43061037-chinese-american-bear-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.854916"
+    },
+    {
+        "title": "Soda Blonde at Sunset Tavern",
+        "artist": "Soda Blonde",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43065814-soda-blonde-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.854961"
+    },
+    {
+        "title": "Racing Mount Pleasant at Neumos",
+        "artist": "Racing Mount Pleasant",
+        "venue": "Neumos",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43053148-racing-mount-pleasant-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855006"
+    },
+    {
+        "title": "Josh Johnson (Comedian) at Paramount Theatre",
+        "artist": "Josh Johnson (Comedian)",
+        "venue": "Paramount Theatre",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43082047-josh-johnson-comedian-at-paramount-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855051"
+    },
+    {
+        "title": "Mary Gauthier at Tractor Tavern",
+        "artist": "Mary Gauthier",
+        "venue": "Tractor Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43066794-mary-gauthier-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855093"
+    },
+    {
+        "title": "John FM at Substation",
+        "artist": "John FM",
+        "venue": "Substation",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43069458-john-fm-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855135"
+    },
+    {
+        "title": "The Jaws of Brooklyn at Tractor Tavern",
+        "artist": "The Jaws of Brooklyn",
+        "venue": "Tractor Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43078363-jaws-of-brooklyn-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.855176"
+    },
+    {
+        "title": "Fri 24 Apr 2026 at The Crocodile - Old Location",
+        "artist": "Fri 24 Apr 2026",
+        "venue": "The Crocodile - Old Location",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43072455-food-house-at-crocodile-old-location",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857308"
+    },
+    {
+        "title": "Thu 09 Jul 2026 at Sunset Tavern",
+        "artist": "Thu 09 Jul 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43077705-wimps-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857364"
+    },
+    {
+        "title": "Sun 17 May 2026 at El Corazon",
+        "artist": "Sun 17 May 2026",
+        "venue": "El Corazon",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43057455-cryptopsy-at-el-corazon",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857418"
+    },
+    {
+        "title": "Sat 25 Jul 2026 at Neumos",
+        "artist": "Sat 25 Jul 2026",
+        "venue": "Neumos",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43061037-chinese-american-bear-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857473"
+    },
+    {
+        "title": "Sun 27 Sep 2026 at Sunset Tavern",
+        "artist": "Sun 27 Sep 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43065814-soda-blonde-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857527"
+    },
+    {
+        "title": "Mon 08 Jun 2026 at Neumos",
+        "artist": "Mon 08 Jun 2026",
+        "venue": "Neumos",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43053148-racing-mount-pleasant-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857582"
+    },
+    {
+        "title": "Sat 21 Nov 2026 at Paramount Theatre",
+        "artist": "Sat 21 Nov 2026",
+        "venue": "Paramount Theatre",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43082047-josh-johnson-comedian-at-paramount-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857641"
+    },
+    {
+        "title": "Thu 11 Jun 2026 at Tractor Tavern",
+        "artist": "Thu 11 Jun 2026",
+        "venue": "Tractor Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43066794-mary-gauthier-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857698"
+    },
+    {
+        "title": "Sat 16 May 2026 at Substation",
+        "artist": "Sat 16 May 2026",
+        "venue": "Substation",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43069458-john-fm-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857752"
+    },
+    {
+        "title": "Sat 23 May 2026 at Tractor Tavern",
+        "artist": "Sat 23 May 2026",
+        "venue": "Tractor Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43078363-jaws-of-brooklyn-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857806"
+    },
+    {
+        "title": "Wed 29 Apr 2026 at Nectar Lounge",
+        "artist": "Wed 29 Apr 2026",
+        "venue": "Nectar Lounge",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43081451-las-cafeteras-at-nectar-lounge",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857860"
+    },
+    {
+        "title": "Thu 12 Mar 2026 at El Corazon",
+        "artist": "Thu 12 Mar 2026",
+        "venue": "El Corazon",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43075229-snuffed-on-sight-at-el-corazon",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857914"
+    },
+    {
+        "title": "Wed 12 Aug 2026 at McCaw Hall, Seattle Center",
+        "artist": "Wed 12 Aug 2026",
+        "venue": "McCaw Hall, Seattle Center",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43063926-ali-wong-at-mccaw-hall-seattle-center",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.857969"
+    },
+    {
+        "title": "Fri 03 Apr 2026 at Substation",
+        "artist": "Fri 03 Apr 2026",
+        "venue": "Substation",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43071696-partiboi69-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858026"
+    },
+    {
+        "title": "Sun 14 Jun 2026 at The Vera Project",
+        "artist": "Sun 14 Jun 2026",
+        "venue": "The Vera Project",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43056523-moon-walker-at-vera-project",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858080"
+    },
+    {
+        "title": "Wed 30 Sep 2026 at Moore Theatre",
+        "artist": "Wed 30 Sep 2026",
+        "venue": "Moore Theatre",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43066546-aj-croce-at-moore-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858134"
+    },
+    {
+        "title": "Thu 16 Apr 2026 at The Black and Tan Hall",
+        "artist": "Thu 16 Apr 2026",
+        "venue": "The Black and Tan Hall",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43087190-buffalo-nichols-at-black-and-tan-hall",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858187"
+    },
+    {
+        "title": "Thu 07 May 2026 at Washington Hall",
+        "artist": "Thu 07 May 2026",
+        "venue": "Washington Hall",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43055617-porangui-at-washington-hall",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858249"
+    },
+    {
+        "title": "Wed 10 Jun 2026 at Barboza",
+        "artist": "Wed 10 Jun 2026",
+        "venue": "Barboza",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43074190-lowercase-at-barboza",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858309"
+    },
+    {
+        "title": "Thu 30 Apr 2026 at The Funhouse",
+        "artist": "Thu 30 Apr 2026",
+        "venue": "The Funhouse",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43069098-blvck-hippie-at-funhouse",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858364"
+    },
+    {
+        "title": "Fri 22 May 2026 at Substation",
+        "artist": "Fri 22 May 2026",
+        "venue": "Substation",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43071857-vhoor-at-substation",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858418"
+    },
+    {
+        "title": "Fri 10 Apr 2026 at Lucky Liquor",
+        "artist": "Fri 10 Apr 2026",
+        "venue": "Lucky Liquor",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43088432-prisoner-at-lucky-liquor",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858473"
+    },
+    {
+        "title": "Sun 10 May 2026 at Clock-Out Lounge",
+        "artist": "Sun 10 May 2026",
+        "venue": "Clock-Out Lounge",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43060894-miscomings-at-clockout-lounge",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858527"
+    },
+    {
+        "title": "Thu 30 Apr 2026 at Sunset Tavern",
+        "artist": "Thu 30 Apr 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43049733-anna-tivel-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858581"
+    },
+    {
+        "title": "Sat 14 Nov 2026 at Neptune Theatre",
+        "artist": "Sat 14 Nov 2026",
+        "venue": "Neptune Theatre",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43052794-ron-funches-at-neptune-theatre",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858635"
+    },
+    {
+        "title": "Mon 27 Apr 2026 at Sunset Tavern",
+        "artist": "Mon 27 Apr 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43072174-jonny-fritz-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858690"
+    },
+    {
+        "title": "Sat 02 May 2026 at Clock-Out Lounge",
+        "artist": "Sat 02 May 2026",
+        "venue": "Clock-Out Lounge",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43089265-filth-is-eternal-at-clockout-lounge",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858744"
+    },
+    {
+        "title": "Thu 07 May 2026 at Sunset Tavern",
+        "artist": "Thu 07 May 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43073149-sam-blasucci-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858799"
+    },
+    {
+        "title": "Sun 17 May 2026 at Baba Yaga",
+        "artist": "Sun 17 May 2026",
+        "venue": "Baba Yaga",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43062724-ehiorobo-at-baba-yaga",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858857"
+    },
+    {
+        "title": "Thu 06 Aug 2026 at Hidden Hall",
+        "artist": "Thu 06 Aug 2026",
+        "venue": "Hidden Hall",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43066176-playlunch-at-hidden-hall",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858912"
+    },
+    {
+        "title": "Mon 11 May 2026 at Barboza",
+        "artist": "Mon 11 May 2026",
+        "venue": "Barboza",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43053104-caroline-kingsbury-at-barboza",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.858969"
+    },
+    {
+        "title": "Wed 08 Apr 2026 at Barboza",
+        "artist": "Wed 08 Apr 2026",
+        "venue": "Barboza",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43056343-sosocamo-at-barboza",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859028"
+    },
+    {
+        "title": "Sun 24 May 2026 at Neumos",
+        "artist": "Sun 24 May 2026",
+        "venue": "Neumos",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43059502-boris-grebenshikov-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859086"
+    },
+    {
+        "title": "Sat 02 May 2026 at Q Nightclub",
+        "artist": "Sat 02 May 2026",
+        "venue": "Q Nightclub",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43051309-chris-avantgarde-at-q-nightclub",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859146"
+    },
+    {
+        "title": "Fri 24 Apr 2026 at Sunset Tavern",
+        "artist": "Fri 24 Apr 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43068400-tv-star-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859202"
+    },
+    {
+        "title": "Fri 24 Apr 2026 at The Black Lodge",
+        "artist": "Fri 24 Apr 2026",
+        "venue": "The Black Lodge",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43070988-casino-hearts-at-black-lodge",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859258"
+    },
+    {
+        "title": "Sat 14 Mar 2026 at The Vera Project",
+        "artist": "Sat 14 Mar 2026",
+        "venue": "The Vera Project",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43059868-rat-utopia-experiment-at-vera-project",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859324"
+    },
+    {
+        "title": "Thu 14 May 2026 at Neumos",
+        "artist": "Thu 14 May 2026",
+        "venue": "Neumos",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43069806-telehealth-at-neumos",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859380"
+    },
+    {
+        "title": "Sat 02 May 2026 at APEX",
+        "artist": "Sat 02 May 2026",
+        "venue": "APEX",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43068769-fretland-at-apex",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859435"
+    },
+    {
+        "title": "Fri 20 Mar 2026 at Clearwater Beach Rock Music & Sports Lounge",
+        "artist": "Fri 20 Mar 2026",
+        "venue": "Clearwater Beach Rock Music & Sports Lounge",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43075288-heart-by-heart-at-clearwater-beach-rock-music-and-sports-lounge",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859489"
+    },
+    {
+        "title": "Wed 27 May 2026 at Belltown Yacht Club",
+        "artist": "Wed 27 May 2026",
+        "venue": "Belltown Yacht Club",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43086573-daytripper-at-belltown-yacht-club",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859544"
+    },
+    {
+        "title": "Thu 07 May 2026 at The Black Lodge",
+        "artist": "Thu 07 May 2026",
+        "venue": "The Black Lodge",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43064797-broken-record-at-black-lodge",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859597"
+    },
+    {
+        "title": "Thu 02 Apr 2026 at Tractor Tavern",
+        "artist": "Thu 02 Apr 2026",
+        "venue": "Tractor Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43060195-shoecraft-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859652"
+    },
+    {
+        "title": "Fri 15 May 2026 at Seattle, WA, US",
+        "artist": "Fri 15 May 2026",
+        "venue": "Seattle, WA, US",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43088686-operelly-at-unknown-venue",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859707"
+    },
+    {
+        "title": "Wed 15 Apr 2026 at Hidden Hall",
+        "artist": "Wed 15 Apr 2026",
+        "venue": "Hidden Hall",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43088762-maxwell-friedman-group-at-hidden-hall",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859761"
+    },
+    {
+        "title": "Thu 26 Mar 2026 at Baba Yaga",
+        "artist": "Thu 26 Mar 2026",
+        "venue": "Baba Yaga",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43063759-period-bomb-at-baba-yaga",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859814"
+    },
+    {
+        "title": "Sat 14 Mar 2026 at Showbox SoDo",
+        "artist": "Sat 14 Mar 2026",
+        "venue": "Showbox SoDo",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43079119-club-90s-at-showbox-sodo",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859868"
+    },
+    {
+        "title": "Thu 12 Mar 2026 at Sunset Tavern",
+        "artist": "Thu 12 Mar 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43072075-fluung-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859922"
+    },
+    {
+        "title": "Sat 02 May 2026 at Conor Byrne Pub",
+        "artist": "Sat 02 May 2026",
+        "venue": "Conor Byrne Pub",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43079800-guest-directors-at-conor-byrne-pub",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.859976"
+    },
+    {
+        "title": "Sat 30 May 2026 at Belltown Yacht Club",
+        "artist": "Sat 30 May 2026",
+        "venue": "Belltown Yacht Club",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43081624-i90-fiasco-at-belltown-yacht-club",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.860030"
+    },
+    {
+        "title": "Sun 14 Jun 2026 at Tractor Tavern",
+        "artist": "Sun 14 Jun 2026",
+        "venue": "Tractor Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43060863-emerson-woolf-at-tractor-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.860090"
+    },
+    {
+        "title": "Sun 15 Mar 2026 at Baba Yaga",
+        "artist": "Sun 15 Mar 2026",
+        "venue": "Baba Yaga",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43069192-cofgod-at-baba-yaga",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.860145"
+    },
+    {
+        "title": "Fri 20 Mar 2026 at Sunset Tavern",
+        "artist": "Fri 20 Mar 2026",
+        "venue": "Sunset Tavern",
+        "date": null,
+        "link": "https://www.songkick.com/concerts/43061803-afterlife-giftshop-at-sunset-tavern",
+        "category": "Music",
+        "source": "songkick",
+        "scraped_at": "2026-03-11T15:05:44.860205"
+    }
+];
+        
+        // Group events by date
+        function groupByDate(events) {
+            const groups = {};
+            
+            events.forEach(event => {
+                const date = event.date || 'TBD';
+                if (!groups[date]) {
+                    groups[date] = [];
+                }
+                groups[date].push(event);
+            });
+            
+            return groups;
+        }
+        
+        // Format date nicely
+        function formatDate(dateStr) {
+            if (dateStr === 'TBD') return 'Date TBD';
+            
+            const date = new Date(dateStr);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const dateOnly = date.toDateString();
+            const todayOnly = today.toDateString();
+            const tomorrowOnly = tomorrow.toDateString();
+            
+            if (dateOnly === todayOnly) {
+                return 'Today';
+            } else if (dateOnly === tomorrowOnly) {
+                return 'Tomorrow';
+            } else {
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+        }
+        
+        // Render events
+        function renderEvents() {
+            const container = document.getElementById('events-container');
+            
+            if (events.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No events found</h3>
+                        <p>Check back later for updates</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const grouped = groupByDate(events);
+            const sortedDates = Object.keys(grouped).sort();
+            
+            let html = '';
+            
+            sortedDates.forEach(date => {
+                const dateEvents = grouped[date];
+                html += `
+                    <div class="date-section">
+                        <h2 class="date-header">${formatDate(date)}</h2>
+                        ${dateEvents.map(event => `
+                            <div class="event-card">
+                                <div class="event-title">${event.artist}</div>
+                                <div class="event-venue">📍 ${event.venue || 'Venue TBD'}</div>
+                                <div class="event-meta">
+                                    <span class="tag music">${event.category}</span>
+                                    ${event.link ? `<a href="${event.link}" target="_blank" class="btn">Get Tickets</a>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Set last updated date
+        function setLastUpdated() {
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEvents();
+            setLastUpdated();
+        });
+    </script>
+</body>
+</html>
